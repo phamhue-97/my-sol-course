@@ -4,11 +4,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "checkB:main": "npx esrun check-balance-mainet.ts ",
-    "tx": "npx esrun transactions.ts",
-    "faucet": "npx esrun airdrop.ts",
-    "send": "npx esrun send-sol.ts",
-    "genWl": "npx esrun generate-keypair.ts"
+    "checkB:main": "npx esrun begin/check-balance-mainet.ts ",
+    "tx": "npx esrun begin/transactions.ts",
+    "faucet": "npx esrun begin/airdrop.ts",
+    "send": "npx esrun begin/send-sol.ts",
+    "genWl": "npx esrun begin/generate-keypair.ts"
   },
   "keywords": [],
   "author": "",
