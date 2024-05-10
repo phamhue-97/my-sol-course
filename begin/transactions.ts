@@ -7,7 +7,7 @@ import {
     Connection
 } from "@solana/web3.js";
 import "dotenv/config"
-import {airdropIfRequired, getKeypairFromFile} from "@solana-developers/helpers";
+import { getKeypairFromFile } from "@solana-developers/helpers";
 const connection = new Connection("https://api.devnet.solana.com", "confirmed");
 
 // @ts-ignore
