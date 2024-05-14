@@ -1,52 +1,37 @@
-import {
-    TransactionInstruction,
-    PublicKey,
-    Transaction,
-    Connection,
-    sendAndConfirmTransaction,
-    clusterApiUrl
-} from "@solana/web3.js";
+import { transfer, getOrCreateAssociatedTokenAccount } from '@solana/spl-token';
+import { clusterApiUrl, Connection, Keypair, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import { getKeypairFromFile } from "@solana-developers/helpers";
+const connection = new Connection(
+    clusterApiUrl('devnet'),
+    'confirmed'
+);
+// @ts-ignore
+const payer = await getKeypairFromFile("./wallet-keypair.json");
+// @ts-ignore
+const toWallet = await getKeypairFromFile("./recipient.json");
 
-const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
+const mint = new PublicKey('CdZrjH5h5Zpx7hDBCaBCrYfokbMm63fog536afze1aoy')
+
+// Get the token account of the fromWallet address, and if it does not exist, create it
+// @ts-ignore
+const fromTokenAccount = await getOrCreateAssociatedTokenAccount(
+    connection,
+    payer,
+    mint,
+    payer.publicKey
+);
+
+// Get the token account of the toWallet address, and if it does not exist, create it
+// @ts-ignore
+const toTokenAccount = await getOrCreateAssociatedTokenAccount(connection, payer, mint, toWallet.publicKey);
 
 // @ts-ignore
-const sender = await getKeypairFromFile("./wallet-keypair.json");
-// @ts-ignore
-const recipient = await getKeypairFromFile("./recipient.json");
-
-const instruction = new TransactionInstruction({
-    keys: [
-        /*{
-            pubkey: new PublicKey(sender.publicKey.toBase58()),
-            isSigner: true,
-            isWritable: true,
-        },
-        {
-            pubkey: new PublicKey(recipient.publicKey.toBase58()),
-            isSigner: false,
-            isWritable: false,
-        },*/
-        {
-            pubkey: new PublicKey("Ah9K7dQ8EHaZqcAsgBW8w37yN2eAy3koFmUn4x3CJtod"),
-            isSigner: false,
-            isWritable: true,
-        }
-    ],
-    // programId: new PublicKey("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"), // USD Coin
-    programId: new PublicKey("ChT1B39WKLS8qUrkLvFDXMhEJ4F1XZzwUNHUt4AU9aVa")
-});
-
-const transaction = new Transaction().add(instruction)
-try {
-    // @ts-ignore
-    const signature = await sendAndConfirmTransaction(
-        connection,
-        transaction,
-        [sender],
-    );
-
-    console.log(`✅ Success! Transaction signature is: ${signature}`);
-} catch (e) {
-    console.error("Error: ", e)
-}
+const sig = await transfer(
+    connection,
+    payer,
+    fromTokenAccount.address,
+    toTokenAccount.address,
+    payer.publicKey,
+    Math.pow(10, 9) * 5
+);
+console.log('sig: ', sig)
